@@ -6,27 +6,30 @@ description := "Sangria Marshalling API"
 homepage := Some(url("http://sangria-graphql.org"))
 licenses := Seq("Apache License, ASL Version 2.0" → url("http://www.apache.org/licenses/LICENSE-2.0"))
 
-scalaVersion := "2.12.8"
-crossScalaVersions := Seq("2.11.11", "2.12.8")
+scalaVersion := "2.13.0-RC1"
+crossScalaVersions := Seq("2.11.11", "2.12.8", "2.13.0-RC1")
 
 scalacOptions ++= Seq("-deprecation", "-feature")
 
 scalacOptions ++= {
-  if (scalaVersion.value startsWith "2.12")
+  if ((scalaVersion.value startsWith "2.12") || (scalaVersion.value startsWith "2.13"))
     Seq.empty
   else
     Seq("-target:jvm-1.7")
 }
 
-libraryDependencies ++= Seq(
-  "org.scalatest" %% "scalatest" % "3.0.5" % Test
-)
+libraryDependencies ++= {
+  if (scalaVersion.value startsWith "2.13")
+    Seq("org.scalatest" %% "scalatest" % "3.0.8-RC2" % Test)
+  else
+    Seq("org.scalatest" %% "scalatest" % "3.0.5" % Test)
+}
 
 // Publishing
 
 publishMavenStyle := true
 publishArtifact in Test := false
-pomIncludeRepository := (_ ⇒ false)
+pomIncludeRepository := (_ => false)
 publishTo := Some(
   if (version.value.trim.endsWith("SNAPSHOT"))
     "snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
@@ -43,6 +46,6 @@ scmInfo := Some(ScmInfo(
 
 // nice *magenta* prompt!
 
-shellPrompt in ThisBuild := { state ⇒
+shellPrompt in ThisBuild := { state =>
   scala.Console.MAGENTA + Project.extract(state).currentRef.project + "> " + scala.Console.RESET
 }
